@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  users-service:
+    build:
+      context: ./users-service
+      dockerfile: Dockerfile
+    container_name: users-service
+    ports:
+      - "5001:5001"
+    environment:
+      - DATABASE_URL=sqlite:///users.db
+      - SECRET_KEY=your-secret-key-change-in-production
+      - FLASK_ENV=development
+    volumes:
+      - ./users-service:/app
+      - users-data:/app/instance
+    networks:
+      - meeting-room-network
+    restart: unless-stopped
+
+  rooms-service:
+    build:
+      context: ./rooms-service
+      dockerfile: Dockerfile
+    container_name: rooms-service
+    ports:
+      - "5002:5002"
+    environment:
+      - DATABASE_URL=sqlite:///rooms.db
+      - SECRET_KEY=your-secret-key-change-in-production
+      - FLASK_ENV=development
+    volumes:
+      - ./rooms-service:/app
+      - rooms-data:/app/instance
+    networks:
+      - meeting-room-network
+    restart: unless-stopped
+
+volumes:
+  users-data:
+  rooms-data:
+
+networks:
+  meeting-room-network:
+    driver: bridge

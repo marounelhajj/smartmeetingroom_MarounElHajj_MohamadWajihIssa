@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>test_app &mdash; Smart Meeting Room - Users Service 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=8d563738"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Smart Meeting Room - Users Service
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">users-service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../app.html">app module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../test_app.html">test_app module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Smart Meeting Room - Users Service</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">test_app</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for test_app</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Unit tests for Users Service</span>
+<span class="sd">Author: Maroun El Hajj</span>
+
+<span class="sd">This file contains comprehensive tests for the Users Service API.</span>
+<span class="sd">Run with: pytest test_app.py -v --cov=app --cov-report=html</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app</span><span class="w"> </span><span class="kn">import</span> <span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">User</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">werkzeug.security</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_password_hash</span>
+
+
+<div class="viewcode-block" id="client">
+<a class="viewcode-back" href="../test_app.html#test_app.client">[docs]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">client</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create test client with in-memory database.</span>
+<span class="sd">    This fixture is used by all test functions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;TESTING&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;SQLALCHEMY_DATABASE_URI&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;sqlite:///:memory:&#39;</span>
+    
+    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">test_client</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">create_all</span><span class="p">()</span>
+            <span class="c1"># Create test admin user</span>
+            <span class="n">admin</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Admin User&#39;</span><span class="p">,</span>
+                <span class="n">username</span><span class="o">=</span><span class="s1">&#39;admin&#39;</span><span class="p">,</span>
+                <span class="n">password</span><span class="o">=</span><span class="n">generate_password_hash</span><span class="p">(</span><span class="s1">&#39;admin123&#39;</span><span class="p">),</span>
+                <span class="n">email</span><span class="o">=</span><span class="s1">&#39;admin@test.com&#39;</span><span class="p">,</span>
+                <span class="n">role</span><span class="o">=</span><span class="s1">&#39;admin&#39;</span>
+            <span class="p">)</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">admin</span><span class="p">)</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="k">yield</span> <span class="n">client</span>
+        <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">drop_all</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="admin_token">
+<a class="viewcode-back" href="../test_app.html#test_app.admin_token">[docs]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">admin_token</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get admin authentication token for protected routes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/api/users/login&#39;</span><span class="p">,</span>
+                          <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+                              <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="s1">&#39;admin&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;admin123&#39;</span>
+                          <span class="p">}),</span>
+                          <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;token&#39;</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="test_health_check">
+<a class="viewcode-back" href="../test_app.html#test_app.test_health_check">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_health_check</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test health check endpoint.&quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/health&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;healthy&#39;</span>
+    <span class="k">assert</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;service&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;users&#39;</span></div>
+
+
+
+<div class="viewcode-block" id="test_user_registration_success">
+<a class="viewcode-back" href="../test_app.html#test_app.test_user_registration_success">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_user_registration_success</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test successful user registration.&quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/api/users/register&#39;</span><span class="p">,</span>
+                          <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+                              <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;John Doe&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="s1">&#39;johndoe&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;password123&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="s1">&#39;john@example.com&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;role&#39;</span><span class="p">:</span> <span class="s1">&#39;regular_user&#39;</span>
+                          <span class="p">}),</span>
+                          <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+    
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;User registered successfully&#39;</span>
+    <span class="k">assert</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;username&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;johndoe&#39;</span>
+    <span class="k">assert</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;role&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;regular_user&#39;</span></div>
+
+
+
+<div class="viewcode-block" id="test_user_registration_missing_fields">
+<a class="viewcode-back" href="../test_app.html#test_app.test_user_registration_missing_fields">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_user_registration_missing_fields</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test registration with missing required fields.&quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/api/users/register&#39;</span><span class="p">,</span>
+                          <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+                              <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;John Doe&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="s1">&#39;johndoe&#39;</span>
+                          <span class="p">}),</span>
+                          <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+    
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="s1">&#39;error&#39;</span> <span class="ow">in</span> <span class="n">data</span></div>
+
+
+
+<div class="viewcode-block" id="test_user_registration_duplicate_username">
+<a class="viewcode-back" href="../test_app.html#test_app.test_user_registration_duplicate_username">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_user_registration_duplicate_username</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test registration with duplicate username.&quot;&quot;&quot;</span>
+    <span class="c1"># First registration</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/api/users/register&#39;</span><span class="p">,</span>
+               <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+                   <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;John Doe&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="s1">&#39;johndoe&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;password123&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="s1">&#39;john@example.com&#39;</span>
+               <span class="p">}),</span>
+               <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Try to register again with same username</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/api/users/register&#39;</span><span class="p">,</span>
+                          <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+                              <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Jane Doe&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="s1">&#39;johndoe&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;password456&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="s1">&#39;jane@example.com&#39;</span>
+                          <span class="p">}),</span>
+                          <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+    
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">409</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="s1">&#39;already exists&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="test_user_registration_invalid_email">
+<a class="viewcode-back" href="../test_app.html#test_app.test_user_registration_invalid_email">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_user_registration_invalid_email</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test registration with invalid email format.&quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/api/users/register&#39;</span><span class="p">,</span>
+                          <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+                              <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;John Doe&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="s1">&#39;johndoe&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;password123&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="s1">&#39;invalid-email&#39;</span>
+                          <span class="p">}),</span>
+                          <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+    
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="s1">&#39;Invalid email&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="test_user_registration_weak_password">
+<a class="viewcode-back" href="../test_app.html#test_app.test_user_registration_weak_password">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_user_registration_weak_password</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test registration with weak password.&quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/api/users/register&#39;</span><span class="p">,</span>
+                          <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+                              <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;John Doe&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="s1">&#39;johndoe&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;123&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="s1">&#39;john@example.com&#39;</span>
+                          <span class="p">}),</span>
+                          <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+    
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="s1">&#39;at least 6 characters&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="test_user_login_success">
+<a class="viewcode-back" href="../test_app.html#test_app.test_user_login_success">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_user_login_success</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test successful user login.&quot;&quot;&quot;</span>
+    <span class="c1"># Register user first</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/api/users/register&#39;</span><span class="p">,</span>
+               <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+                   <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;John Doe&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="s1">&#39;johndoe&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;password123&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="s1">&#39;john@example.com&#39;</span>
+               <span class="p">}),</span>
+               <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Login</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/api/users/login&#39;</span><span class="p">,</span>
+                          <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+                              <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="s1">&#39;johndoe&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;password123&#39;</span>
+                          <span class="p">}),</span>
+                          <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+    
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="s1">&#39;token&#39;</span> <span class="ow">in</span> <span class="n">data</span>
+    <span class="k">assert</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Login successful&#39;</span></div>
+
+
+
+<div class="viewcode-block" id="test_user_login_invalid_credentials">
+<a class="viewcode-back" href="../test_app.html#test_app.test_user_login_invalid_credentials">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_user_login_invalid_credentials</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test login with invalid credentials.&quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/api/users/login&#39;</span><span class="p">,</span>
+                          <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+                              <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="s1">&#39;nonexistent&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;wrongpassword&#39;</span>
+                          <span class="p">}),</span>
+                          <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+    
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="s1">&#39;Invalid&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="test_get_all_users_as_admin">
+<a class="viewcode-back" href="../test_app.html#test_app.test_get_all_users_as_admin">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_get_all_users_as_admin</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">admin_token</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test getting all users as admin.&quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/api/users&#39;</span><span class="p">,</span>
+                         <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Bearer </span><span class="si">{</span><span class="n">admin_token</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">})</span>
+    
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="s1">&#39;users&#39;</span> <span class="ow">in</span> <span class="n">data</span>
+    <span class="k">assert</span> <span class="s1">&#39;count&#39;</span> <span class="ow">in</span> <span class="n">data</span></div>
+
+
+
+<div class="viewcode-block" id="test_get_all_users_without_token">
+<a class="viewcode-back" href="../test_app.html#test_app.test_get_all_users_without_token">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_get_all_users_without_token</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test getting all users without authentication.&quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
+    
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span></div>
+
+
+
+<div class="viewcode-block" id="test_get_specific_user">
+<a class="viewcode-back" href="../test_app.html#test_app.test_get_specific_user">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_get_specific_user</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">admin_token</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test getting specific user by username.&quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/api/users/admin&#39;</span><span class="p">,</span>
+                         <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Bearer </span><span class="si">{</span><span class="n">admin_token</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">})</span>
+    
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;username&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;admin&#39;</span></div>
+
+
+
+<div class="viewcode-block" id="test_get_nonexistent_user">
+<a class="viewcode-back" href="../test_app.html#test_app.test_get_nonexistent_user">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_get_nonexistent_user</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">admin_token</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test getting non-existent user.&quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/api/users/nonexistent&#39;</span><span class="p">,</span>
+                         <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Bearer </span><span class="si">{</span><span class="n">admin_token</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">})</span>
+    
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span></div>
+
+
+
+<div class="viewcode-block" id="test_update_user_profile">
+<a class="viewcode-back" href="../test_app.html#test_app.test_update_user_profile">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_update_user_profile</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">admin_token</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test updating user profile.&quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;/api/users/admin&#39;</span><span class="p">,</span>
+                         <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Bearer </span><span class="si">{</span><span class="n">admin_token</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">},</span>
+                         <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+                             <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Updated Admin&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="s1">&#39;newemail@test.com&#39;</span>
+                         <span class="p">}),</span>
+                         <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+    
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Updated Admin&#39;</span>
+    <span class="k">assert</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;email&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;newemail@test.com&#39;</span></div>
+
+
+
+<div class="viewcode-block" id="test_update_user_invalid_email">
+<a class="viewcode-back" href="../test_app.html#test_app.test_update_user_invalid_email">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_update_user_invalid_email</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">admin_token</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test updating user with invalid email.&quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;/api/users/admin&#39;</span><span class="p">,</span>
+                         <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Bearer </span><span class="si">{</span><span class="n">admin_token</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">},</span>
+                         <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+                             <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="s1">&#39;invalid-email&#39;</span>
+                         <span class="p">}),</span>
+                         <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+    
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span></div>
+
+
+
+<div class="viewcode-block" id="test_delete_user_as_admin">
+<a class="viewcode-back" href="../test_app.html#test_app.test_delete_user_as_admin">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_delete_user_as_admin</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">admin_token</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test deleting user as admin.&quot;&quot;&quot;</span>
+    <span class="c1"># Create a user to delete</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/api/users/register&#39;</span><span class="p">,</span>
+               <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+                   <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Test User&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="s1">&#39;testuser&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;password123&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="s1">&#39;test@example.com&#39;</span>
+               <span class="p">}),</span>
+               <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Delete the user</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">&#39;/api/users/testuser&#39;</span><span class="p">,</span>
+                           <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Bearer </span><span class="si">{</span><span class="n">admin_token</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">})</span>
+    
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span></div>
+
+
+
+<div class="viewcode-block" id="test_delete_own_account_prevention">
+<a class="viewcode-back" href="../test_app.html#test_app.test_delete_own_account_prevention">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_delete_own_account_prevention</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">admin_token</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test that users cannot delete their own account.&quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">&#39;/api/users/admin&#39;</span><span class="p">,</span>
+                           <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Bearer </span><span class="si">{</span><span class="n">admin_token</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">})</span>
+    
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="s1">&#39;Cannot delete your own account&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="test_sql_injection_prevention">
+<a class="viewcode-back" href="../test_app.html#test_app.test_sql_injection_prevention">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_sql_injection_prevention</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test SQL injection prevention in username.&quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/api/users/register&#39;</span><span class="p">,</span>
+                          <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+                              <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Test User&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="s2">&quot;admin&#39;; DROP TABLE users--&quot;</span><span class="p">,</span>
+                              <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;password123&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="s1">&#39;test@example.com&#39;</span>
+                          <span class="p">}),</span>
+                          <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Should either succeed with sanitized input or fail validation</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">201</span><span class="p">,</span> <span class="mi">400</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="test_unauthorized_access_to_protected_route">
+<a class="viewcode-back" href="../test_app.html#test_app.test_unauthorized_access_to_protected_route">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_unauthorized_access_to_protected_route</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test accessing protected route without authentication.&quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/api/users&#39;</span><span class="p">)</span>
+    
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="s1">&#39;Token&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="test_invalid_role_registration">
+<a class="viewcode-back" href="../test_app.html#test_app.test_invalid_role_registration">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_invalid_role_registration</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test registration with invalid role.&quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/api/users/register&#39;</span><span class="p">,</span>
+                          <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+                              <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Test User&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="s1">&#39;testuser&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;password123&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="s1">&#39;test@example.com&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;role&#39;</span><span class="p">:</span> <span class="s1">&#39;invalid_role&#39;</span>
+                          <span class="p">}),</span>
+                          <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+    
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="s1">&#39;Invalid role&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="test_update_user_role_as_admin">
+<a class="viewcode-back" href="../test_app.html#test_app.test_update_user_role_as_admin">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_update_user_role_as_admin</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">admin_token</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test updating user role (admin only).&quot;&quot;&quot;</span>
+    <span class="c1"># Create a regular user</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/api/users/register&#39;</span><span class="p">,</span>
+               <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+                   <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Regular User&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="s1">&#39;regularuser&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;password123&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="s1">&#39;regular@example.com&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;role&#39;</span><span class="p">:</span> <span class="s1">&#39;regular_user&#39;</span>
+               <span class="p">}),</span>
+               <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Update role to facility_manager</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;/api/users/regularuser&#39;</span><span class="p">,</span>
+                         <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Bearer </span><span class="si">{</span><span class="n">admin_token</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">},</span>
+                         <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+                             <span class="s1">&#39;role&#39;</span><span class="p">:</span> <span class="s1">&#39;facility_manager&#39;</span>
+                         <span class="p">}),</span>
+                         <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+    
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">][</span><span class="s1">&#39;role&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;facility_manager&#39;</span></div>
+
+
+
+<div class="viewcode-block" id="test_token_expiration_handling">
+<a class="viewcode-back" href="../test_app.html#test_app.test_token_expiration_handling">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_token_expiration_handling</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">admin_token</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test that expired tokens are rejected.&quot;&quot;&quot;</span>
+    <span class="c1"># This is a placeholder - in production you&#39;d test with an expired token</span>
+    <span class="c1"># For now, just verify token is required</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/api/users&#39;</span><span class="p">,</span>
+                         <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Bearer invalid_token&#39;</span><span class="p">})</span>
+    
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">pytest</span><span class="o">.</span><span class="n">main</span><span class="p">([</span><span class="vm">__file__</span><span class="p">,</span> <span class="s1">&#39;-v&#39;</span><span class="p">,</span> <span class="s1">&#39;--cov=app&#39;</span><span class="p">,</span> <span class="s1">&#39;--cov-report=html&#39;</span><span class="p">])</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Maroun El Hajj.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
