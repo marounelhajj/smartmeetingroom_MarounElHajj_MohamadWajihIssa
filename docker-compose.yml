@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   users-service:
@@ -10,8 +10,7 @@ services:
       - "5001:5001"
     environment:
       - DATABASE_URL=sqlite:///users.db
-      - SECRET_KEY=your-secret-key-change-in-production
-      - FLASK_ENV=development
+      - SECRET_KEY=change-this-secret-key-in-production
     volumes:
       - ./users-service:/app
       - users-data:/app/instance
@@ -28,8 +27,7 @@ services:
       - "5002:5002"
     environment:
       - DATABASE_URL=sqlite:///rooms.db
-      - SECRET_KEY=your-secret-key-change-in-production
-      - FLASK_ENV=development
+      - SECRET_KEY=change-this-secret-key-in-production
     volumes:
       - ./rooms-service:/app
       - rooms-data:/app/instance
