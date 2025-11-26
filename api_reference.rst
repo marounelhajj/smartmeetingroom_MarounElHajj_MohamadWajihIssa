@@ -105,3 +105,68 @@ Example: Authorization Header
 .. code-block:: text
 
    Authorization: Bearer <JWT_TOKEN>
+
+Bookings Service Endpoints
+--------------------------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Path
+     - Description
+   * - ``GET``
+     - ``/health``
+     - Health check for Bookings Service.
+   * - ``GET``
+     - ``/api/bookings``
+     - List bookings (scope based on role).
+   * - ``GET``
+     - ``/api/bookings/history/<user_id>``
+     - Booking history for a given user.
+   * - ``GET``
+     - ``/api/bookings/check``
+     - Check availability for a room/time window.
+   * - ``POST``
+     - ``/api/bookings``
+     - Create a booking (prevents overlaps).
+   * - ``PUT``
+     - ``/api/bookings/<booking_id>``
+     - Update booking time/room.
+   * - ``DELETE``
+     - ``/api/bookings/<booking_id>``
+     - Cancel booking.
+
+Reviews Service Endpoints
+-------------------------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Path
+     - Description
+   * - ``GET``
+     - ``/health``
+     - Health check for Reviews Service.
+   * - ``GET``
+     - ``/api/reviews``
+     - List reviews (all for moderators/admins).
+   * - ``GET``
+     - ``/api/reviews/room/<room_id>``
+     - Public reviews for a room (hidden excluded).
+   * - ``POST``
+     - ``/api/reviews``
+     - Submit a review (auth required).
+   * - ``PUT``
+     - ``/api/reviews/<review_id>``
+     - Update review (owner or moderator/admin).
+   * - ``DELETE``
+     - ``/api/reviews/<review_id>``
+     - Delete review (owner or moderator/admin).
+   * - ``PATCH``
+     - ``/api/reviews/<review_id>/flag``
+     - Flag or unflag a review.
+   * - ``PATCH``
+     - ``/api/reviews/<review_id>/moderate``
+     - Moderate actions: hide/unhide, clear flags.

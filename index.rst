@@ -10,5 +10,7 @@ Welcome to the Smart Meeting Room System Documentation.
    architecture
    users_service
    rooms_service
+   bookings_service
+   reviews_service
    api_reference
    installation

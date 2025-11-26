@@ -4,60 +4,63 @@ System Architecture
 Overview
 --------
 
-The Smart Meeting Room System is a small microservices-based backend
-designed for managing meeting rooms at AUB and handling basic user
-authentication and authorization.
+The Smart Meeting Room System is a microservices-based backend that manages users, rooms, bookings, and reviews with JWT authentication and role-based access control.
 
-The system is composed of two Flask microservices:
+Services
+--------
 
-* **Users Service** – handles user accounts, passwords, and JWT tokens.
-* **Rooms Service** – manages meeting rooms, availability and filtering.
+* **Users Service** - issues JWT tokens and manages accounts/roles.
+* **Rooms Service** - manages meeting rooms, capacity, equipment, and availability flags.
+* **Bookings Service** - handles room reservations, conflict detection, and booking history.
+* **Reviews Service** - collects room feedback, supports moderation and flagging.
 
-Each service has:
+Cross-cutting enhancements:
 
-* its own **SQLite database** (``users.db`` and ``rooms.db``),
-* its own **Flask application** and REST API,
-* independent **unit tests** with ``pytest``.
+* **Rate limiting** (Bookings/Reviews): sliding window per IP + endpoint to throttle abusive callers.
+* **Auditing/logging** (Bookings/Reviews): rotating file logs capturing user/role/method/path/status for traceability.
+* **Caching** (Bookings availability, Reviews per-room): in-memory TTL caches to speed frequent reads.
+* **Load balancing**: Nginx reverse proxy (``load-balancer`` service) to front Bookings and Reviews for horizontal scaling.
+
+Each service has its own **SQLite database**, **Flask application**, and **pytest** suite.
 
 High-Level Design
 -----------------
 
-* Clients (Postman / browser / other apps) send HTTP requests to the
-  appropriate service:
+* Clients (Postman / backend consumers) call the appropriate service:
 
-  * ``localhost:5001`` → Users Service
-  * ``localhost:5002`` → Rooms Service
+  * ``localhost:5001`` - Users Service
+  * ``localhost:5002`` - Rooms Service
+  * ``localhost:5003`` - Bookings Service
+  * ``localhost:5004`` - Reviews Service
 
-* The **Users Service** authenticates users and issues a **JWT token**.
-  The token encodes:
+* The **Users Service** authenticates users and issues a **JWT** containing:
 
   * ``user_id``
   * ``username``
-  * ``role`` (``admin``, ``regular_user``, ``facility_manager``, etc.)
+  * ``role`` (``admin``, ``regular_user``, ``facility_manager``, ``moderator``, ``auditor``, etc.)
   * expiration time (24 hours)
 
-* The **Rooms Service** expects the JWT token in the ``Authorization``
-  header (``Bearer <token>``). It decodes the token and checks the
-  user's role before allowing changes to rooms.
+* The other services expect the JWT in the ``Authorization`` header (``Bearer <token>``) and enforce RBAC on the decoded payload.
 
 Data Flow
 ---------
 
-1. A new user registers using the Users Service.
+1. A user registers through the Users Service.
 2. The user logs in and receives a JWT token.
-3. The client includes ``Authorization: Bearer <token>`` in requests
-   to the Rooms Service.
-4. The Rooms Service verifies the token and checks the role:
+3. The client includes ``Authorization: Bearer <token>`` when calling Rooms, Bookings, or Reviews.
+4. Each service validates the token and checks roles:
 
-   * **Admin / Facility Manager** → allowed to create, update or delete rooms.
-   * Any authenticated user → allowed to list rooms and read details.
+   * **Admin / Facility Manager** - manage rooms and all bookings.
+   * **Regular User** - manage own bookings and reviews.
+   * **Moderator/Admin** - moderate reviews (hide/flag/unflag).
+   * **Auditor** - read-only access where applicable.
 
 Technology Stack
 ----------------
 
 * Python 3.12
 * Flask & Flask-SQLAlchemy
-* SQLite (for simplicity in the lab)
+* SQLite
 * PyJWT for token creation/validation
 * pytest for automated tests
 * Sphinx for documentation
