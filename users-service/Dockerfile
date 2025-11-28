@@ -1,25 +1,23 @@
-FROM python:3.9-slim
+# Users Service Dockerfile
 
+FROM python:3.12-slim
+
+# Create working directory
 WORKDIR /app
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
-
+# Install dependencies
 COPY requirements.txt .
-
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy application code
 COPY . .
 
-RUN mkdir -p instance
+# Environment variables
+ENV FLASK_ENV=production
+ENV PYTHONUNBUFFERED=1
 
+# Expose port
 EXPOSE 5001
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:5001/health')" || exit 1
-
+# Run the service
 CMD ["python", "app.py"]

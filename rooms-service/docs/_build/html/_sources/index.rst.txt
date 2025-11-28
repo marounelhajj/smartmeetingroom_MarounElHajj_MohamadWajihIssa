@@ -1,11 +1,9 @@
-Smart Meeting Room – Rooms Service
-==================================
-
-Welcome to the documentation for the **Rooms Service** of the Smart Meeting Room System.
+Rooms Service Documentation
+===========================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   modules
    app
+   modules

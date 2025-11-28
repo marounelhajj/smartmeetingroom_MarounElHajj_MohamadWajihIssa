@@ -1,10 +1,9 @@
-Smart Meeting Room – Users Service
-==================================
+Users Service Documentation
+===========================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   modules
    app
-   test_app
+   modules

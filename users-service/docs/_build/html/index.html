@@ -1,25 +1,25 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Smart Meeting Room – Users Service &mdash; Smart Meeting Room - Users Service 1.0.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <title>Users Service Documentation &mdash; Smart Meeting Room - Users Service 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
   
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=8d563738"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="users-service" href="modules.html" /> 
+    <link rel="next" title="Users Service API" href="app.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,9 +43,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">users-service</a></li>
-<li class="toctree-l1"><a class="reference internal" href="app.html">app module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="test_app.html">test_app module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="app.html">Users Service API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Module Index</a></li>
 </ul>
 
         </div>
@@ -62,7 +61,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Smart Meeting Room – Users Service</li>
+      <li class="breadcrumb-item active">Users Service Documentation</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -72,24 +71,21 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="smart-meeting-room-users-service">
-<h1>Smart Meeting Room – Users Service<a class="headerlink" href="#smart-meeting-room-users-service" title="Link to this heading"></a></h1>
+  <section id="users-service-documentation">
+<h1>Users Service Documentation<a class="headerlink" href="#users-service-documentation" title="Link to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">users-service</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="app.html">app module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html">test_app module</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="app.html">app module</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="app.html">Users Service API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="app.html#app.User"><code class="docutils literal notranslate"><span class="pre">User</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="app.html#app.validate_email"><code class="docutils literal notranslate"><span class="pre">validate_email()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="app.html#app.validate_username"><code class="docutils literal notranslate"><span class="pre">validate_username()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="app.html#app.sanitize_input"><code class="docutils literal notranslate"><span class="pre">sanitize_input()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="app.html#app.sanitize"><code class="docutils literal notranslate"><span class="pre">sanitize()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="app.html#app.create_token"><code class="docutils literal notranslate"><span class="pre">create_token()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="app.html#app.decode_token"><code class="docutils literal notranslate"><span class="pre">decode_token()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="app.html#app.token_required"><code class="docutils literal notranslate"><span class="pre">token_required()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="app.html#app.admin_required"><code class="docutils literal notranslate"><span class="pre">admin_required()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="app.html#app.health_check"><code class="docutils literal notranslate"><span class="pre">health_check()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="app.html#app.health"><code class="docutils literal notranslate"><span class="pre">health()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="app.html#app.register"><code class="docutils literal notranslate"><span class="pre">register()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="app.html#app.login"><code class="docutils literal notranslate"><span class="pre">login()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="app.html#app.get_all_users"><code class="docutils literal notranslate"><span class="pre">get_all_users()</span></code></a></li>
@@ -98,30 +94,8 @@
 <li class="toctree-l2"><a class="reference internal" href="app.html#app.delete_user"><code class="docutils literal notranslate"><span class="pre">delete_user()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="test_app.html">test_app module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.client"><code class="docutils literal notranslate"><span class="pre">client()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.admin_token"><code class="docutils literal notranslate"><span class="pre">admin_token()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.test_health_check"><code class="docutils literal notranslate"><span class="pre">test_health_check()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.test_user_registration_success"><code class="docutils literal notranslate"><span class="pre">test_user_registration_success()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.test_user_registration_missing_fields"><code class="docutils literal notranslate"><span class="pre">test_user_registration_missing_fields()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.test_user_registration_duplicate_username"><code class="docutils literal notranslate"><span class="pre">test_user_registration_duplicate_username()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.test_user_registration_invalid_email"><code class="docutils literal notranslate"><span class="pre">test_user_registration_invalid_email()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.test_user_registration_weak_password"><code class="docutils literal notranslate"><span class="pre">test_user_registration_weak_password()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.test_user_login_success"><code class="docutils literal notranslate"><span class="pre">test_user_login_success()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.test_user_login_invalid_credentials"><code class="docutils literal notranslate"><span class="pre">test_user_login_invalid_credentials()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.test_get_all_users_as_admin"><code class="docutils literal notranslate"><span class="pre">test_get_all_users_as_admin()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.test_get_all_users_without_token"><code class="docutils literal notranslate"><span class="pre">test_get_all_users_without_token()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.test_get_specific_user"><code class="docutils literal notranslate"><span class="pre">test_get_specific_user()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.test_get_nonexistent_user"><code class="docutils literal notranslate"><span class="pre">test_get_nonexistent_user()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.test_update_user_profile"><code class="docutils literal notranslate"><span class="pre">test_update_user_profile()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.test_update_user_invalid_email"><code class="docutils literal notranslate"><span class="pre">test_update_user_invalid_email()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.test_delete_user_as_admin"><code class="docutils literal notranslate"><span class="pre">test_delete_user_as_admin()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.test_delete_own_account_prevention"><code class="docutils literal notranslate"><span class="pre">test_delete_own_account_prevention()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.test_sql_injection_prevention"><code class="docutils literal notranslate"><span class="pre">test_sql_injection_prevention()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.test_unauthorized_access_to_protected_route"><code class="docutils literal notranslate"><span class="pre">test_unauthorized_access_to_protected_route()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.test_invalid_role_registration"><code class="docutils literal notranslate"><span class="pre">test_invalid_role_registration()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.test_update_user_role_as_admin"><code class="docutils literal notranslate"><span class="pre">test_update_user_role_as_admin()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_app.html#test_app.test_token_expiration_handling"><code class="docutils literal notranslate"><span class="pre">test_token_expiration_handling()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Module Index</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.html">Users Service API</a></li>
 </ul>
 </li>
 </ul>
@@ -132,13 +106,13 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="modules.html" class="btn btn-neutral float-right" title="users-service" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="app.html" class="btn btn-neutral float-right" title="Users Service API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, Maroun El Hajj.</p>
+    <p>&#169; Copyright .</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -1,20 +1,20 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Index &mdash; Smart Meeting Room - Users Service 1.0.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
   
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=8d563738"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -41,9 +41,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">users-service</a></li>
-<li class="toctree-l1"><a class="reference internal" href="app.html">app module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="test_app.html">test_app module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="app.html">Users Service API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Module Index</a></li>
 </ul>
 
         </div>
@@ -73,8 +72,7 @@
 <h1 id="index">Index</h1>
 
 <div class="genindex-jumpbox">
- <a href="#_"><strong>_</strong></a>
- | <a href="#A"><strong>A</strong></a>
+ <a href="#A"><strong>A</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
@@ -93,20 +91,10 @@
  | <a href="#V"><strong>V</strong></a>
  
 </div>
-<h2 id="_">_</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="app.html#app.User.__init__">__init__() (app.User method)</a>
-</li>
-  </ul></td>
-</tr></table>
-
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="app.html#app.admin_required">admin_required() (in module app)</a>
-</li>
-      <li><a href="test_app.html#test_app.admin_token">admin_token() (in module test_app)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -123,17 +111,21 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="test_app.html#test_app.client">client() (in module test_app)</a>
+      <li><a href="app.html#app.create_token">create_token() (in module app)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="app.html#app.User.created_at">created_at (app.User attribute)</a>, <a href="app.html#id6">[1]</a>
+      <li><a href="app.html#app.User.created_at">created_at (app.User attribute)</a>
 </li>
   </ul></td>
 </tr></table>
 
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="app.html#app.decode_token">decode_token() (in module app)</a>
+</li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="app.html#app.delete_user">delete_user() (in module app)</a>
 </li>
@@ -143,7 +135,7 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="app.html#app.User.email">email (app.User attribute)</a>, <a href="app.html#id4">[1]</a>
+      <li><a href="app.html#app.User.email">email (app.User attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -163,7 +155,7 @@
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="app.html#app.health_check">health_check() (in module app)</a>
+      <li><a href="app.html#app.health">health() (in module app)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -171,7 +163,7 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="app.html#app.User.id">id (app.User attribute)</a>, <a href="app.html#id0">[1]</a>
+      <li><a href="app.html#app.User.id">id (app.User attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -193,8 +185,6 @@
       <ul>
         <li><a href="app.html#module-app">app</a>
 </li>
-        <li><a href="test_app.html#module-test_app">test_app</a>
-</li>
       </ul></li>
   </ul></td>
 </tr></table>
@@ -202,7 +192,7 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="app.html#app.User.name">name (app.User attribute)</a>, <a href="app.html#id1">[1]</a>
+      <li><a href="app.html#app.User.name">name (app.User attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -210,7 +200,7 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="app.html#app.User.password">password (app.User attribute)</a>, <a href="app.html#id3">[1]</a>
+      <li><a href="app.html#app.User.password">password (app.User attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -230,7 +220,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="app.html#app.User.role">role (app.User attribute)</a>, <a href="app.html#id5">[1]</a>
+      <li><a href="app.html#app.User.role">role (app.User attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -238,7 +228,7 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="app.html#app.sanitize_input">sanitize_input() (in module app)</a>
+      <li><a href="app.html#app.sanitize">sanitize() (in module app)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -246,59 +236,10 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
-    test_app
-
-      <ul>
-        <li><a href="test_app.html#module-test_app">module</a>
-</li>
-      </ul></li>
-      <li><a href="test_app.html#test_app.test_delete_own_account_prevention">test_delete_own_account_prevention() (in module test_app)</a>
-</li>
-      <li><a href="test_app.html#test_app.test_delete_user_as_admin">test_delete_user_as_admin() (in module test_app)</a>
-</li>
-      <li><a href="test_app.html#test_app.test_get_all_users_as_admin">test_get_all_users_as_admin() (in module test_app)</a>
-</li>
-      <li><a href="test_app.html#test_app.test_get_all_users_without_token">test_get_all_users_without_token() (in module test_app)</a>
-</li>
-      <li><a href="test_app.html#test_app.test_get_nonexistent_user">test_get_nonexistent_user() (in module test_app)</a>
-</li>
-      <li><a href="test_app.html#test_app.test_get_specific_user">test_get_specific_user() (in module test_app)</a>
-</li>
-      <li><a href="test_app.html#test_app.test_health_check">test_health_check() (in module test_app)</a>
-</li>
-      <li><a href="test_app.html#test_app.test_invalid_role_registration">test_invalid_role_registration() (in module test_app)</a>
-</li>
-      <li><a href="test_app.html#test_app.test_sql_injection_prevention">test_sql_injection_prevention() (in module test_app)</a>
-</li>
-      <li><a href="test_app.html#test_app.test_token_expiration_handling">test_token_expiration_handling() (in module test_app)</a>
+      <li><a href="app.html#app.User.to_dict">to_dict() (app.User method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="test_app.html#test_app.test_unauthorized_access_to_protected_route">test_unauthorized_access_to_protected_route() (in module test_app)</a>
-</li>
-      <li><a href="test_app.html#test_app.test_update_user_invalid_email">test_update_user_invalid_email() (in module test_app)</a>
-</li>
-      <li><a href="test_app.html#test_app.test_update_user_profile">test_update_user_profile() (in module test_app)</a>
-</li>
-      <li><a href="test_app.html#test_app.test_update_user_role_as_admin">test_update_user_role_as_admin() (in module test_app)</a>
-</li>
-      <li><a href="test_app.html#test_app.test_user_login_invalid_credentials">test_user_login_invalid_credentials() (in module test_app)</a>
-</li>
-      <li><a href="test_app.html#test_app.test_user_login_success">test_user_login_success() (in module test_app)</a>
-</li>
-      <li><a href="test_app.html#test_app.test_user_registration_duplicate_username">test_user_registration_duplicate_username() (in module test_app)</a>
-</li>
-      <li><a href="test_app.html#test_app.test_user_registration_invalid_email">test_user_registration_invalid_email() (in module test_app)</a>
-</li>
-      <li><a href="test_app.html#test_app.test_user_registration_missing_fields">test_user_registration_missing_fields() (in module test_app)</a>
-</li>
-      <li><a href="test_app.html#test_app.test_user_registration_success">test_user_registration_success() (in module test_app)</a>
-</li>
-      <li><a href="test_app.html#test_app.test_user_registration_weak_password">test_user_registration_weak_password() (in module test_app)</a>
-</li>
-      <li><a href="app.html#app.User.to_dict">to_dict() (app.User method)</a>
-</li>
       <li><a href="app.html#app.token_required">token_required() (in module app)</a>
 </li>
   </ul></td>
@@ -313,7 +254,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="app.html#app.User">User (class in app)</a>
 </li>
-      <li><a href="app.html#app.User.username">username (app.User attribute)</a>, <a href="app.html#id2">[1]</a>
+      <li><a href="app.html#app.User.username">username (app.User attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -339,7 +280,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, Maroun El Hajj.</p>
+    <p>&#169; Copyright .</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
