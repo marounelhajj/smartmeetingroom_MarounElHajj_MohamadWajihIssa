@@ -18,6 +18,16 @@ import os
 import jwt
 import re
 
+# --- Custom application exceptions -----------------------------------------
+from exceptions import (
+    AppError,
+    ValidationError,
+    AuthError,
+    PermissionError,
+    NotFoundError,
+    ConflictError,
+)
+
 # ----------------------------------------------------------------------
 # Flask & DB configuration
 # ----------------------------------------------------------------------
@@ -33,11 +43,56 @@ app.config["SECRET_KEY"] = os.getenv(
 
 db = SQLAlchemy(app)
 
+
+# ----------------------------------------------------------------------
+# Global error handlers
+# ----------------------------------------------------------------------
+@app.errorhandler(AppError)
+def handle_app_error(err: AppError):
+    """
+    Handle all custom application errors in a standard JSON format.
+    All ValidationError / AuthError / PermissionError / ConflictError /
+    NotFoundError inherit from AppError.
+    """
+    response = jsonify(err.to_dict())
+    response.status_code = err.status_code
+    return response
+
+
+@app.errorhandler(404)
+def handle_404(err):
+    return (
+        jsonify(
+            {
+                "error": {
+                    "code": "not_found",
+                    "message": "Resource not found",
+                }
+            }
+        ),
+        404,
+    )
+
+
+@app.errorhandler(500)
+def handle_500(err):
+    # You could log `err` here if you add logging
+    return (
+        jsonify(
+            {
+                "error": {
+                    "code": "internal_error",
+                    "message": "An unexpected error occurred. Please try again later.",
+                }
+            }
+        ),
+        500,
+    )
+
+
 # ----------------------------------------------------------------------
 # Models
 # ----------------------------------------------------------------------
-
-
 class User(db.Model):
     """SQLAlchemy model for users."""
 
@@ -70,8 +125,6 @@ class User(db.Model):
 # ----------------------------------------------------------------------
 # Helper functions
 # ----------------------------------------------------------------------
-
-
 def validate_email(email: str) -> bool:
     """Return True if email has valid format."""
     pattern = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
@@ -114,8 +167,6 @@ def decode_token(raw_token: str):
 # ----------------------------------------------------------------------
 # Decorators for authentication/authorization
 # ----------------------------------------------------------------------
-
-
 def token_required(fn):
     """Decorator to enforce presence of valid JWT in Authorization header."""
 
@@ -123,7 +174,7 @@ def token_required(fn):
     def wrapper(*args, **kwargs):
         auth_header = request.headers.get("Authorization")
         if not auth_header:
-            return jsonify({"error": "Authorization header missing"}), 401
+            raise AuthError("Authorization header missing")
 
         # Expect "Bearer <token>"
         if auth_header.startswith("Bearer "):
@@ -135,11 +186,11 @@ def token_required(fn):
             data = decode_token(token)
             current_user = User.query.get(data["user_id"])
             if not current_user:
-                return jsonify({"error": "User not found"}), 401
+                raise AuthError("User not found")
         except jwt.ExpiredSignatureError:
-            return jsonify({"error": "Token expired"}), 401
+            raise AuthError("Token expired")
         except jwt.InvalidTokenError:
-            return jsonify({"error": "Invalid token"}), 401
+            raise AuthError("Invalid token")
 
         return fn(current_user, *args, **kwargs)
 
@@ -152,7 +203,7 @@ def admin_required(fn):
     @wraps(fn)
     def wrapper(current_user: User, *args, **kwargs):
         if current_user.role != "admin":
-            return jsonify({"error": "Admin privileges required"}), 403
+            raise PermissionError("Admin privileges required")
         return fn(current_user, *args, **kwargs)
 
     return wrapper
@@ -161,8 +212,6 @@ def admin_required(fn):
 # ----------------------------------------------------------------------
 # Routes
 # ----------------------------------------------------------------------
-
-
 @app.route("/health", methods=["GET"])
 def health():
     """Simple health check."""
@@ -185,10 +234,10 @@ def register():
     """
     data = request.get_json() or {}
 
-    # Required fields
+    # Required fields (using ValidationError + ConflictError as in the example)
     for field in ["name", "username", "password", "email"]:
         if not data.get(field):
-            return jsonify({"error": f"{field} is required"}), 400
+            raise ValidationError(f"{field} is required")
 
     name = sanitize(data["name"])
     username = sanitize(data["username"])
@@ -206,29 +255,28 @@ def register():
     ]
 
     if not validate_username(username or ""):
-        return jsonify(
-            {
-                "error": "Username must be 3-50 chars long and contain only letters, "
-                "numbers, and underscore"
-            }
-        ), 400
+        raise ValidationError(
+            "Username must be 3-50 chars long and contain only letters, "
+            "numbers, and underscore"
+        )
 
     if not validate_email(email or ""):
-        return jsonify({"error": "Invalid email format"}), 400
+        raise ValidationError("Invalid email format")
 
     if len(password) < 6:
-        return jsonify({"error": "Password must be at least 6 characters"}), 400
+        raise ValidationError("Password must be at least 6 characters")
 
     if role not in valid_roles:
-        return jsonify(
-            {"error": f"Invalid role. Allowed roles: {', '.join(valid_roles)}"}
-        ), 400
+        raise ValidationError(
+            f"Invalid role. Allowed roles: {', '.join(valid_roles)}"
+        )
 
     if User.query.filter_by(username=username).first():
-        return jsonify({"error": "Username already exists"}), 409
+        # exactly like the example they gave you
+        raise ConflictError("Username already exists")
 
     if User.query.filter_by(email=email).first():
-        return jsonify({"error": "Email already exists"}), 409
+        raise ConflictError("Email already exists")
 
     try:
         hashed = generate_password_hash(password)
@@ -243,12 +291,18 @@ def register():
         db.session.commit()
 
         return (
-            jsonify({"message": "User registered successfully", "user": new_user.to_dict()}),
+            jsonify(
+                {
+                    "message": "User registered successfully",
+                    "user": new_user.to_dict(),
+                }
+            ),
             201,
         )
     except Exception as exc:  # noqa: BLE001
         db.session.rollback()
-        return jsonify({"error": f"Registration failed: {exc}"}), 500
+        # This will be caught by the 500 handler
+        raise AppError(f"Registration failed: {exc}", status_code=500)
 
 
 @app.route("/api/users/login", methods=["POST"])
@@ -267,11 +321,11 @@ def login():
     password = data.get("password")
 
     if not username or not password:
-        return jsonify({"error": "Username and password are required"}), 400
+        raise ValidationError("Username and password are required")
 
     user = User.query.filter_by(username=username).first()
     if not user or not check_password_hash(user.password, password):
-        return jsonify({"error": "Invalid username or password"}), 401
+        raise AuthError("Invalid username or password")
 
     token = create_token(user)
 
@@ -296,7 +350,7 @@ def get_all_users(current_user: User):
     - admins and auditors can read all users
     """
     if current_user.role not in ["admin", "auditor"]:
-        return jsonify({"error": "Insufficient permissions"}), 403
+        raise PermissionError("Insufficient permissions")
 
     users = User.query.all()
     return (
@@ -325,11 +379,11 @@ def get_user(current_user: User, username: str):
         "admin",
         "auditor",
     ]:
-        return jsonify({"error": "Insufficient permissions"}), 403
+        raise PermissionError("Insufficient permissions")
 
     user = User.query.filter_by(username=username).first()
     if not user:
-        return jsonify({"error": "User not found"}), 404
+        raise NotFoundError("User not found")
 
     return jsonify({"user": user.to_dict()}), 200
 
@@ -351,11 +405,11 @@ def update_user(current_user: User, username: str):
     username = sanitize(username)
 
     if current_user.username != username and current_user.role != "admin":
-        return jsonify({"error": "Insufficient permissions"}), 403
+        raise PermissionError("Insufficient permissions")
 
     user = User.query.filter_by(username=username).first()
     if not user:
-        return jsonify({"error": "User not found"}), 404
+        raise NotFoundError("User not found")
 
     data = request.get_json() or {}
 
@@ -367,25 +421,23 @@ def update_user(current_user: User, username: str):
     if "email" in data and data["email"]:
         email = sanitize(data["email"])
         if not validate_email(email or ""):
-            return jsonify({"error": "Invalid email format"}), 400
+            raise ValidationError("Invalid email format")
 
         other = User.query.filter_by(email=email).first()
         if other and other.id != user.id:
-            return jsonify({"error": "Email already in use"}), 409
+            raise ConflictError("Email already in use")
         user.email = email
 
     # Password
     if "password" in data and data["password"]:
         if len(data["password"]) < 6:
-            return jsonify(
-                {"error": "Password must be at least 6 characters"},
-            ), 400
+            raise ValidationError("Password must be at least 6 characters")
         user.password = generate_password_hash(data["password"])
 
     # Role
     if "role" in data:
         if current_user.role != "admin":
-            return jsonify({"error": "Only admins can change roles"}), 403
+            raise PermissionError("Only admins can change roles")
         new_role = sanitize(data["role"])
         valid_roles = [
             "admin",
@@ -396,9 +448,9 @@ def update_user(current_user: User, username: str):
             "service_account",
         ]
         if new_role not in valid_roles:
-            return jsonify(
-                {"error": f"Invalid role. Allowed: {', '.join(valid_roles)}"},
-            ), 400
+            raise ValidationError(
+                f"Invalid role. Allowed: {', '.join(valid_roles)}"
+            )
         user.role = new_role
 
     try:
@@ -406,7 +458,7 @@ def update_user(current_user: User, username: str):
         return jsonify({"message": "User updated", "user": user.to_dict()}), 200
     except Exception as exc:  # noqa: BLE001
         db.session.rollback()
-        return jsonify({"error": f"Update failed: {exc}"}), 500
+        raise AppError(f"Update failed: {exc}", status_code=500)
 
 
 @app.route("/api/users/<string:username>", methods=["DELETE"])
@@ -421,10 +473,11 @@ def delete_user(current_user: User, username: str):
     username = sanitize(username)
     user = User.query.filter_by(username=username).first()
     if not user:
-        return jsonify({"error": "User not found"}), 404
+        raise NotFoundError("User not found")
 
     if user.id == current_user.id:
-        return jsonify({"error": "Admin cannot delete own account"}), 400
+        # could be ValidationError or ConflictError; both are fine
+        raise ValidationError("Admin cannot delete own account")
 
     try:
         db.session.delete(user)
@@ -432,7 +485,7 @@ def delete_user(current_user: User, username: str):
         return jsonify({"message": f"User {username} deleted"}), 200
     except Exception as exc:  # noqa: BLE001
         db.session.rollback()
-        return jsonify({"error": f"Delete failed: {exc}"}), 500
+        raise AppError(f"Delete failed: {exc}", status_code=500)
 
 
 # ----------------------------------------------------------------------
